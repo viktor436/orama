@@ -5,7 +5,8 @@ import matplotlib.pyplot as plt
 import cv2
 from transformers import pipeline
 from PIL import Image
-import requests
+import os
+
 
 # Load the depth image
 # image_path = "/content/frame_0199.jpg"#'/content/frame_0232.jpg'  
@@ -14,6 +15,7 @@ import requests
 
 
 # load pipe
+global pipe
 pipe = pipeline(task="depth-estimation",
                 model="depth-anything/Depth-Anything-V2-Base-hf",
                 device = "cuda")
@@ -93,6 +95,21 @@ def draw_line(path,pipe):
   plt.axis('off')
   plt.show()
 
+def process_images(input_folder, output_folder):
+    if not os.path.exists(output_folder):
+        os.makedirs(output_folder)
+    
+    for filename in os.listdir(input_folder):
+        file_path = os.path.join(input_folder, filename)
+        if filename.lower().endswith(('.png', '.jpg', '.jpeg', '.bmp', '.gif', '.tiff')):
+            try:
+                processed_image = draw_line(file_path)
+                
+                processed_image.save(os.path.join(output_folder, filename))
+                
+                print(f"Processed and saved: {filename}")
+            except Exception as e:
+                print(f"Error processing {filename}: {e}")
 
 if __name__ == "__main__":
     path = "/content/frame_0149.jpg"#"/content/frame_0044.jpg"

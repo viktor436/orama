@@ -8,6 +8,7 @@ import time
 from http.server import SimpleHTTPRequestHandler
 import socketserver
 import threading
+from deteckt_horizon import process_images
 
 load_dotenv()
 
@@ -70,10 +71,11 @@ print("fps: ", fps)
 frame_interval = 200  # Process every 120th frame
 
 # Directory to store images
-output_dir = "./images/"
+output_dir = "./images_input/"
 if not os.path.exists(output_dir):
     os.makedirs(output_dir)
 
+process_images("./images_input/", "./images/")
 
 def get_prediction(url):
     result_queue = queue.Queue()  # Create a queue to store the result
@@ -82,7 +84,7 @@ def get_prediction(url):
         from openai import OpenAI
 
         client = OpenAI()
-        prompt = "Role: You are a helpfull guide for blind person. You identify potential hazards and guide the blind person around them or inform him. You are his eyes, cause he can't see. Data: You receive an image. The image shows the direction the blind person walks. Task: Guide the blind person in the safest way during his walk. Tell me where should I go along the road. You should find, identify and inform about hazards like: potholes, poles, bins, roads, crossings, pedestrian traffic lights and its colors, any obstacles on the sidewalk and so on. You should aim to keep the person on the side walk, guide him around obstacles and dangers. Don't forget that the person can't see anything and where it is on the sidewalk. Answer with 1 sentences max."
+        prompt = "Role: You are a helpfull guide for blind person. You identify potential hazards and guide the blind person around them or inform him. You are his eyes, cause he can't see. Data: You receive an image. The image shows the direction the blind person walks. Task: Guide the blind person in the safest way during his walk. Tell me where should I go along the road. You should find, identify and inform about hazards like: potholes, poles, bins, roads, crossings, pedestrian traffic lights and its colors, any obstacles on the sidewalk and so on.Look for objeckts under the red line! You should aim to keep the person on the side walk, guide him around obstacles and dangers. Don't forget that the person can't see anything and where it is on the sidewalk. Answer with 1 sentences max."
         completion = client.chat.completions.create(
             model="ft:gpt-4o-2024-08-06:personal:orama:AFAUMDfh",
             temperature=0.01,
